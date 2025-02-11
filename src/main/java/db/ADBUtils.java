@@ -22,9 +22,9 @@ import java.util.List;
  */
 public class ADBUtils {
     
-    static final String DB_URL = "jdbc:mysql://localhost:3306/cab"; // Replace with your DB details
+    static final String DB_URL = "jdbc:mysql://localhost:3306/Cab?autoReconnect=true&useSSL=false"; // Replace with your DB details
     static final String USER = "root"; // Your MySQL username
-    static final String PASS = ""; // Your MySQL password
+    static final String PASS = "ID24@isuri"; // Your MySQL password
     
     
     public User getUser(int id) throws SQLException {
@@ -56,7 +56,7 @@ public class ADBUtils {
         return us;
     }
     
-     public List<User> getUser() {
+    public List<User> getUser() {
         List<User> user = new ArrayList<>();
          try {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -66,8 +66,10 @@ public class ADBUtils {
                     ResultSet rs = stmt.executeQuery("SELECT * FROM signin");) {
                 while (rs.next()) {
                     User us = new User();
-                    us.setId( rs.getInt("id"));
+                    us.setId( rs.getInt("sign_id"));
                     us.setUsername(rs.getString("username"));
+                     us.setPassword(rs.getString("password"));
+
                     user.add(us);
                 }
             } catch (SQLException e) {
@@ -82,24 +84,36 @@ public class ADBUtils {
     }
      
       public boolean addUser(User us) {
+       
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
         try {
-            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-
-            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
-                    Statement stmt = conn.createStatement(); 
-                    ) {
-                stmt.executeUpdate("INSERT INTO signin (id, username,password) "
-                        + "VALUES ('"+ us.getId()+"', '"+ us.getUsername() +"','"+ us.getPassword() +"');");
-                return true;
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            
+            // Insert query without the auto-incremented 'id' field
+            String query = "INSERT INTO signin (username, password) VALUES (?, ?)";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, us.getUsername());
+            stmt.setString(2, us.getPassword());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;  // Returns true if the insert was successful
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Ensure resources are closed
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-        } catch (Exception e) {
-
         }
-        return false;
+        return false; // Return false in case of error
     }
+
     
    public boolean updateUser(User us) {
     try {

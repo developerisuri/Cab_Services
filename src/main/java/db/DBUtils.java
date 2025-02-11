@@ -23,9 +23,15 @@ import java.util.List;
 public class DBUtils {
     
    
-   static final String DB_URL = "jdbc:mysql://localhost:3306/Cab?autoReconnect=true&useSSL=true"; // Replace with your DB details
+   static final String DB_URL = "jdbc:mysql://localhost:3306/Cab?autoReconnect=true&useSSL=false"; // Replace with your DB details
     static final String USER = "root"; // Your MySQL username
     static final String PASS = "ID24@isuri"; // Your MySQL password
+    
+    
+    
+    
+    
+    
     
     // Add User method corresponding to the 'signIn' table
     public boolean addUser(User us) {
