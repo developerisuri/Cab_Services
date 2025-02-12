@@ -15,6 +15,17 @@ public class Customer {
     private String address;
     private String nic;
     private String telephone;
+    
+    
+    // Constructor
+    public Customer(int signId, String name, String address, String nic, String telephone) {
+        this.signId = signId;
+        this.name = name;
+        this.address = address;
+        this.nic = nic;
+        this.telephone = telephone;
+    }
+    
 
     
     // Getters and setters

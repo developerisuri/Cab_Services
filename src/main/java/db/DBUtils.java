@@ -142,63 +142,98 @@ public class DBUtils {
 
 
 
-// Query to check if the sign_id exists in the customer table
-    private static final String CUSTOMER_CHECK_QUERY = "SELECT COUNT(*) FROM customer WHERE sign_id = ?";
+//Customer Registration
 
-    // Query to insert a new customer into the customer table
-    private static final String INSERT_CUSTOMER_QUERY = "INSERT INTO customer (sign_id, name, address, nic, telephone) VALUES (?, ?, ?, ?, ?)";
-
-    // Method to get a database connection
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, USER, PASS);
+   // Check if the sign_id exists in the signin table
+    public boolean isSignIdValid(int signId) {
+        String query = "SELECT COUNT(*) FROM signin WHERE sign_id = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            
+            stmt.setInt(1, signId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    // Method to check if customer exists and register if not
-    public static boolean isCustomerExists(int signId) {
-        boolean exists = false;
+    // Register a customer with the provided details
+    public boolean registerCustomer(int signId, String name, String address, String nic, String telephone) {
+        String query = "INSERT INTO customer (sign_id, name, address, nic, telephone) VALUES (?, ?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            
+            stmt.setInt(1, signId);
+            stmt.setString(2, name);
+            stmt.setString(3, address);
+            stmt.setString(4, nic);
+            stmt.setString(5, telephone);
 
-        // Check if the sign_id exists in the customer table
-        try (Connection conn = getConnection();
-             PreparedStatement checkStmt = conn.prepareStatement(CUSTOMER_CHECK_QUERY)) {
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-            checkStmt.setInt(1, signId);
+    // Check if a customer exists based on the sign_id (Optional - If needed)
+    public boolean isCustomerExists(int signId) {
+        String query = "SELECT COUNT(*) FROM customer WHERE sign_id = ?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            
+            stmt.setInt(1, signId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-            // Execute the query to check if sign_id exists in customer table
-            try (ResultSet rs = checkStmt.executeQuery()) {
-                if (rs.next() && rs.getInt(1) > 0) {
-                    exists = true;  // Customer exists
+
+
+//Vehicle Display
+
+// Fetch all vehicles from the database
+   public List<Vehicle> getAllVehicles() {
+        List<Vehicle> vehicle = new ArrayList<>();
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
+                    Statement stmt = conn.createStatement(); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM vehicle");) {
+                while (rs.next()) {
+                    Vehicle ve = new Vehicle();
+                    ve.setVehicleId( rs.getInt("vehicle_id"));
+                    ve.setPlate(rs.getString("plate"));
+                    ve.setType(rs.getString("type"));
+                    ve.setModel(rs.getString("model"));
+                    ve.setColour(rs.getString("colour"));
+                     ve.setBaseFare(rs.getInt("basefare"));
+                     ve.setStatus(rs.getString("status"));
+
+                    
+
+
+                    vehicle.add(ve);
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (Exception e) {
+
         }
 
-        return exists;
-    }
-
-    // Method to insert a new customer into the customer table
-    public static boolean registerCustomer(int signId, String name, String address, String nic, String telephone) {
-        boolean isRegistered = false;
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(INSERT_CUSTOMER_QUERY)) {
-
-            ps.setInt(1, signId);  // Foreign Key
-            ps.setString(2, name);
-            ps.setString(3, address);
-            ps.setString(4, nic);
-            ps.setString(5, telephone);
-
-            // Execute the insert query
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                isRegistered = true;  // Registration successful
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return isRegistered;
+        return vehicle;
     }
 }
