@@ -236,4 +236,62 @@ public class DBUtils {
 
         return vehicle;
     }
+   
+   
+   
+   //Driver Display
+
+// Fetch all drivers from the database
+   public List<Driver> getAllDrivers() {
+        List<Driver> driver = new ArrayList<>();
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
+                    Statement stmt = conn.createStatement(); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM drivers ");) {
+                while (rs.next()) {
+                    Driver dr = new Driver();
+                    dr.setDriverId( rs.getInt("driver_id"));
+                    dr.setName(rs.getString("name"));
+                    dr.setAddress(rs.getString("address"));
+                    dr.setTele(rs.getString("tele"));
+                   
+
+                    
+
+
+                    driver.add(dr);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+
+        }
+
+        return driver;
+    }
+   
+   // Help instructions
+   
+   public List<help> getAllHelpInstructions() {
+        List<help> helpList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM help");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                help help = new help();
+                help.setHelpId(rs.getInt("help_id"));
+                help.setInstructions(rs.getString("instructions")); // LONGTEXT retrieval
+                helpList.add(help);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return helpList;
+    }
 }
+   
