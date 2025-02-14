@@ -116,26 +116,30 @@ public class ADBUtils {
 
     
    public boolean updateUser(User us) {
+   
     try {
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              Statement stmt = conn.createStatement()) {
-            
-            // Update both the username and password
-            String sql = "UPDATE signin SET username = '" + us.getUsername() + "', password = '" + us.getPassword() + "' WHERE id = '" + us.getId() + "';";
-            
-            // Execute the update query
-            stmt.executeUpdate(sql);
+
+            stmt.executeUpdate("UPDATE signin SET username = '" + us.getUsername() + 
+                               "', password = '" + us.getPassword() + 
+                               "' WHERE id = '" + us.getId() + "';");
             return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     } catch (Exception e) {
         e.printStackTrace();
     }
     return false;
 }
+
+
+
    
    
    public boolean deleteUser(int id) {
