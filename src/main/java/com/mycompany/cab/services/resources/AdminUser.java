@@ -42,11 +42,11 @@ public class AdminUser {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUser(@PathParam("id") int id) {
+    public Response getUseri(@PathParam("id") int id) {
          ADBUtils utils = new ADBUtils();
          
          try {
-            User us = utils.getUser(id);
+            User us = utils.getUseri(id);
             if (us == null) {
                 return Response
                     .status(404)

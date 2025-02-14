@@ -27,7 +27,7 @@ public class ADBUtils {
     static final String PASS = "ID24@isuri"; // Your MySQL password
     
     
-    public User getUser(int id) throws SQLException {
+    public User getUseri(int id) throws SQLException {
         User us = null;
          try {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
