@@ -10,31 +10,40 @@ package db;
  */
 public class Customer {
     
-    private int signId;
+    private int regid;
     private String name;
     private String address;
     private String nic;
-    private String telephone;
+    private String tele;
     
+    
+    
+     public Customer() {
+        this.regid = -1;
+        this.name = "";
+        this.address = "";
+        this.nic = "";
+         this.tele = "";
+    }
     
     // Constructor
-    public Customer(int signId, String name, String address, String nic, String telephone) {
-        this.signId = signId;
+    public Customer(int regid, String name, String address, String nic, String tele) {
+        this.regid= regid;
         this.name = name;
         this.address = address;
         this.nic = nic;
-        this.telephone = telephone;
+        this.tele = tele;
     }
     
 
     
     // Getters and setters
-    public int getSignId() {
-        return signId;
+    public int getRegId() {
+        return regid;
     }
 
-    public void setSignId(int signId) {
-        this.signId = signId;
+    public void setRegId(int regid) {
+        this.regid = regid;
     }
 
     public String getName() {
@@ -62,10 +71,10 @@ public class Customer {
     }
 
     public String getTelephone() {
-        return telephone;
+        return tele;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setTelephone(String tele) {
+        this.tele = tele;
     }
 }

@@ -143,61 +143,68 @@ public class DBUtils {
 
 
 //Customer Registration
+    public boolean addCustomer(Customer customer) {
+Connection conn = null;
+    PreparedStatement stmt = null;
+    
+    try {
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        
+        // Insert query for customer table
+        String query = "INSERT INTO customer (name, address, nic, tele) VALUES (?, ?, ?, ?)";
+        stmt = conn.prepareStatement(query);
+        stmt.setString(1, customer.getName());
+        stmt.setString(2, customer.getAddress());
+        stmt.setString(3, customer.getNic());
+        stmt.setString(4, customer.getTelephone());
+        
+        int rowsAffected = stmt.executeUpdate();
+        return rowsAffected > 0;  // Returns true if insert was successful
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Ensure resources are closed
+        try {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    return false; // Return false in case of error
+    }
+    
+//Customer List
+     
+    public List<Customer> getCustomer() {
+        List<Customer> customer = new ArrayList<>();
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 
-   // Check if the sign_id exists in the signin table
-    public boolean isSignIdValid(int signId) {
-        String query = "SELECT COUNT(*) FROM signin WHERE sign_id = ?";
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            
-            stmt.setInt(1, signId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
+                    Statement stmt = conn.createStatement(); 
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM customer");) {
+                while (rs.next()) {
+                   Customer cu = new Customer();
+                   cu.setRegId( rs.getInt("regid"));
+                    cu.setName(rs.getString("name"));
+                     cu.setAddress(rs.getString("address"));
+                      cu.setNic(rs.getString("nic"));
+                       cu.setTelephone(rs.getString("tele"));
+
+                    customer .add(cu);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (Exception e) {
+
         }
-        return false;
+
+        return customer ;
     }
-
-    // Register a customer with the provided details
-    public boolean registerCustomer(int signId, String name, String address, String nic, String telephone) {
-        String query = "INSERT INTO customer (sign_id, name, address, nic, telephone) VALUES (?, ?, ?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            
-            stmt.setInt(1, signId);
-            stmt.setString(2, name);
-            stmt.setString(3, address);
-            stmt.setString(4, nic);
-            stmt.setString(5, telephone);
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Check if a customer exists based on the sign_id (Optional - If needed)
-    public boolean isCustomerExists(int signId) {
-        String query = "SELECT COUNT(*) FROM customer WHERE sign_id = ?";
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            
-            stmt.setInt(1, signId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 
 
 //Vehicle Display
