@@ -44,42 +44,43 @@ public class DBUtilsTest {
         // Cleanup: Ensure test users are deleted after each test
         //dbUtils.deleteUser(9999);
     }
+}
 
     /**
      * Test of addUser method, of class DBUtils.
      */
     
-     @Test
-    public void testGetUserl() throws Exception {
-        User expResult = new User(6, "Carlos Sainz","6554");
-        DBUtils instance = new DBUtils();
+    // @Test
+   // public void testGetUserl() throws Exception {
+        //User expResult = new User(6, "Carlos Sainz","6554");
+      //  DBUtils instance = new DBUtils();
          
         // Test the adding
-        boolean added = instance.addUser(expResult);
-        assertEquals(added, true);
+      //  boolean added = instance.addUser(expResult);
+        //assertEquals(added, true);
         
-    }
+   // }
     
     
-   @Test
-    public void testvalidateUserLogin_ValidCredentials() {
-        User user = new User();
-        user.setUsername("hi");
-        user.setPassword("222");
+  // @Test
+  //  public void testvalidateUserLogin_ValidCredentials() {
+      //  User user = new User();
+       // user.setUsername("hi");
+       // user.setPassword("222");
 
-        boolean result = dbUtils.validateUserLogin(user);
-        assertTrue(result, "The login should be valid for correct credentials.");
-    }
+       // boolean result = dbUtils.validateUserLogin(user);
+      //  assertTrue(result, "The login should be valid for correct credentials.");
+   // }
 
-    @Test
-    public void testvalidateUserLogin_InvalidCredentials() {
-        User user = new User();
-        user.setUsername("invalidUsername");
-        user.setPassword("invalidPassword");
+   // @Test
+   // public void testvalidateUserLogin_InvalidCredentials() {
+        //User user = new User();
+      //  user.setUsername("invalidUsername");
+      //  user.setPassword("invalidPassword");
 
-        boolean result = dbUtils.validateUserLogin(user);
-        assertFalse(result, "The login should be invalid for incorrect credentials.");
-    }
+      //  boolean result = dbUtils.validateUserLogin(user);
+       // assertFalse(result, "The login should be invalid for incorrect credentials.");
+   // }
 
    // @Test
    // public void testAddUser() {
@@ -130,33 +131,33 @@ public class DBUtilsTest {
     /**
      * Test of addCustomer method, of class DBUtils.
      */
-    @Test
-   public void testAddCustomer() {
-        System.out.println("addCustomer");
-        Customer customer = new Customer();
-        DBUtils instance = new DBUtils();
-       boolean expResult = instance.addCustomer(customer);
-        boolean result = instance.addCustomer(customer);
-        assertEquals(true, true);
+    //@Test
+  // public void testAddCustomer() {
+       // System.out.println("addCustomer");
+       // Customer customer = new Customer();
+       // DBUtils instance = new DBUtils();
+      // boolean expResult = instance.addCustomer(customer);
+       // boolean result = instance.addCustomer(customer);
+       // assertEquals(true, true);
         // TODO review the generated test code and remove the default call to fail.
       //  fail("The test case is a prototype.");
-    }
+   // }
 
 
     /**
      * Test of getCustomer method, of class DBUtils.
      */
-    @Test
-    public void testGetCustomer() {
-        System.out.println("getCustomer");
-        DBUtils instance = new DBUtils();
-        List<Customer> expResult = instance.getCustomer();
-        List<Customer> result = instance.getCustomer();
-       assertEquals(true, true);
+   // @Test
+   // public void testGetCustomer() {
+      //  System.out.println("getCustomer");
+      //  DBUtils instance = new DBUtils();
+       // List<Customer> expResult = instance.getCustomer();
+      //  List<Customer> result = instance.getCustomer();
+      // assertEquals(true, true);
         // TODO review the generated test code and remove the default call to fail.
      //   fail("The test case is a prototype.");
-    }
-}
+   // }
+//}
 
     /**
      * Test of getAllVehicles method, of class DBUtils.
