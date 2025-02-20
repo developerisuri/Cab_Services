@@ -7,6 +7,8 @@ package com.mycompany.cab.services.resources;
 import com.google.gson.Gson;
 import db.DBUtils;  // Import DBUtils
 import db.Booking;  // Assuming the User class is in the db package
+import db.Vehicle; 
+import db.Driver; 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,9 +39,22 @@ public class BookingService {
 
     // Create a new booking
     @POST
-    public Response createBooking(Booking booking) {
-        bookingDAO.insertBooking(booking);
-        return Response.status(Response.Status.CREATED).entity("Booking created successfully!").build();
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response insertBooking(String json) {
+        //bookingDAO.insertBooking(booking);
+       // return Response.status(Response.Status.CREATED).entity("Booking created successfully!").build();
+       
+       Gson gson = new Gson();
+        Booking booking = gson.fromJson(json, Booking.class);
+        DBUtils utils = new DBUtils();
+        
+        boolean res = utils.insertBooking(booking);
+        
+        if (res) {
+            return Response.status(201).build(); // Success
+        } else {
+            return Response.status(500).entity("Sign Up Failed! Please try again.").build(); // Failure with message
+        }
     }
 
     // Get all bookings
@@ -66,34 +81,34 @@ public Booking getLatestBooking() {
 
 
 
-//@GET
-  //  @Path("/dvehicles")
-   // @Produces(MediaType.APPLICATION_JSON)
-  //  public Response getVehicles() {
-    //  DBUtils utils = new DBUtils();
-      //  List<Vehicle> vehicleList  = utils.getVehicles();
+@GET
+   @Path("/dvehicles")
+    @Produces(MediaType.APPLICATION_JSON)
+   public Response getVehicles() {
+     DBUtils utils = new DBUtils();
+       List<Vehicle> vehicleList  = utils.getVehicles();
         
-      //  Gson gson = new Gson();
-      //  return Response
-             //   .status(200)
-              //  .entity(gson.toJson(vehicleList))
-              //  .build();
+       Gson gson = new Gson();
+       return Response
+                .status(200)
+                .entity(gson.toJson(vehicleList))
+                .build();
     
-   // }
+    }
 
-   // @GET
-   // @Path("/ddrivers")
-  //  @Produces(MediaType.APPLICATION_JSON)
-   // public Response getDrivers() {
-      //  DBUtils utils = new DBUtils();
-      //  List<Driver> driverList  = utils.getDrivers();
+    @GET
+    @Path("/ddrivers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDrivers() {
+      DBUtils utils = new DBUtils();
+       List<Driver> driverList  = utils.getDrivers();
         
-       // Gson gson = new Gson();
-       // return Response
-              //  .status(200)
-              //  .entity(gson.toJson(driverList))
-               // .build();
-   // }
+       Gson gson = new Gson();
+     return Response
+              .status(200)
+              .entity(gson.toJson(driverList))
+               .build();
+   }
 }
 
     
