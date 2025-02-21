@@ -383,36 +383,42 @@ Connection conn = null;
     }
     
 
-    // Get a booking by its ID
-    public Booking getBookingById(int id) {
-        Booking booking = null;
-        String sql = "SELECT * FROM booking2 WHERE book_id = ?";
+    // Get a booking by its Order Number
+public Booking getBookingByOrderNum(String orderNum) throws SQLException {
+    Booking booking = null;
+    
+    try {
+        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 
-        try (Connection conn =  DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM booking2 WHERE ordernum = '" + orderNum + "'")) {
 
-            stmt.setInt(1, id);  // Set the booking ID parameter
-            ResultSet rs = stmt.executeQuery();
-
-            // If the result set has a record, map it to a Booking object
-            if (rs.next()) {
-                booking = new Booking(
-                    rs.getInt("book_id"),
-                    rs.getString("ordernum"),       // Mapping 'ordernum' from MySQL
-                    rs.getString("cname"),
-                    rs.getString("caddress"),
-                    rs.getString("ctele"),
-                    rs.getString("destination"),
-                    rs.getInt("km"),
-                    rs.getInt("vehicle_id"),
-                    rs.getInt("driver_id")
-                );
+            while (rs.next()) {
+                booking = new Booking();
+                booking.setBookId(rs.getInt("book_id"));
+                booking.setOrdernum(rs.getString("ordernum"));
+                booking.setCname(rs.getString("cname"));
+                booking.setCaddress(rs.getString("caddress"));
+                booking.setCtele(rs.getString("ctele"));
+                booking.setDestination(rs.getString("destination"));
+                booking.setKm(rs.getInt("km"));
+                booking.setVehicleId(rs.getInt("vehicle_id"));
+                booking.setDriverId(rs.getInt("driver_id"));
+                break; // Stop after getting the first match
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.print(e);
+            throw e;
         }
-        return booking;
+
+    } catch (SQLException e) {
+        System.err.print(e);
+        throw e;
     }
+
+    return booking;
+}
 
     // Update a booking
     public void updateBooking(Booking booking) {

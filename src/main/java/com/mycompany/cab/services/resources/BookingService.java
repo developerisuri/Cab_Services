@@ -74,9 +74,19 @@ public class BookingService {
     @GET
 @Path("/latest")
 @Produces(MediaType.APPLICATION_JSON)
-public Booking getLatestBooking() {
-    return bookingDAO.getLatestBooking();
-}
+public Response getLatestBooking() {
+   DBUtils utils = new DBUtils(); // DB Utility Class
+        Booking latestBooking = utils.getLatestBooking(); // Fetch latest booking
+        
+        Gson gson = new Gson();
+        return Response
+                .status(200)
+                .entity(gson.toJson(latestBooking))
+                .build();
+    }
+
+
+
 
 
 
@@ -109,7 +119,35 @@ public Booking getLatestBooking() {
               .entity(gson.toJson(driverList))
                .build();
    }
+    
+    @GET
+    @Path("{orderNum}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBookingByOrderNum(@PathParam("orderNum") String orderNum) {
+        DBUtils utils = new DBUtils(); // Utility class for DB operations
+        
+        try {
+            Booking booking = utils.getBookingByOrderNum(orderNum);
+            
+            if (booking == null) {
+                return Response
+                        .status(404)
+                        .build(); 
+            } else {
+                Gson gson = new Gson();
+                return Response
+                        .status(200)
+                        .entity(gson.toJson(booking))
+                        .build();
+            }
+        } catch (SQLException e) {
+            return Response
+                    .status(500)
+                    .build();
+        }
+    }
 }
+
 
     
 
