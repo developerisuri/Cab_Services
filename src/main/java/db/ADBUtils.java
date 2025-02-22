@@ -115,24 +115,20 @@ public class ADBUtils {
     }
 
     
-   public boolean updateUser(User us) {
-   
-    try {
-        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+  public boolean updateUser(User us) {
+    String sql = "UPDATE signin SET username = ?, password = ? WHERE sign_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement stmt = conn.createStatement()) {
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            stmt.executeUpdate("UPDATE signin SET username = '" + us.getUsername() + 
-                               "', password = '" + us.getPassword() + 
-                               "' WHERE id = '" + us.getId() + "';");
-            return true;
+        pstmt.setString(1, us.getUsername());
+        pstmt.setString(2, us.getPassword());
+        pstmt.setInt(3, us.getId());
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        int rowsUpdated = pstmt.executeUpdate();
+        return rowsUpdated > 0;
 
-    } catch (Exception e) {
+    } catch (SQLException e) {
         e.printStackTrace();
     }
     return false;
@@ -140,24 +136,26 @@ public class ADBUtils {
 
 
 
+
    
    
-   public boolean deleteUser(int id) {
-        try {
-            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+  public boolean deleteUser(int id) {
+    try {
+        DriverManager.registerDriver(new com.mysql.jdbc.Driver()); // Using the latest MySQL driver
 
-            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
-                    Statement stmt = conn.createStatement(); 
-                    ) {
-                stmt.executeUpdate("DELETE FROM signin WHERE (id = '"+ id + "');");
-                return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (Exception e) {
-
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); 
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM signin WHERE sign_id = ?")) { // Use prepared statement to prevent SQL injection
+            stmt.setInt(1, id);  // Setting the id parameter in the query
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;  // Return true if at least one row is deleted
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log any SQL exception for debugging
         }
-        return false;
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Log any general exception for debugging
+    }
+    return false;  // Return false if deletion fails
 }
+
 }

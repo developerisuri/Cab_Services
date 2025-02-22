@@ -85,38 +85,64 @@ public class AdminUser {
         }
     }
     
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateUser(String json) {
+   @PUT
+@Path("/update")  // Ensure the path is correct
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Response updateUser(String json) {
+    try {
         Gson gson = new Gson();
         User us = gson.fromJson(json, User.class);
+
+        if (us == null || us.getId() == 0 || us.getUsername() == null || us.getPassword() == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity("{\"error\": \"Invalid user data\"}")
+                .build();
+        }
+
         ADBUtils utils = new ADBUtils();
         boolean res = utils.updateUser(us);
-        
+
         if (res) {
             return Response
-                .status(200)
+                .status(Response.Status.OK)
+                .entity("{\"message\":\"User updated successfully\"}")
                 .build();
         } else {
             return Response
-                .status(500)
+                .status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("{\"error\": \"Failed to update user in the database\"}")
                 .build();
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return Response
+            .status(Response.Status.INTERNAL_SERVER_ERROR)
+            .entity("{\"error\": \"Exception occurred: " + e.getMessage() + "\"}")
+            .build();
     }
-    @DELETE
-    @Path("{id}")
-    public Response deleteUser(@PathParam("id") int id) {
-        ADBUtils utils = new ADBUtils();
-        boolean res = utils.deleteUser(id);
-        if (res) {
-            return Response
-                .status(200)
+}
+
+   
+   @DELETE
+@Path("{id}")
+public Response deleteUser(@PathParam("id") int id) {
+    ADBUtils utils = new ADBUtils();
+    boolean res = utils.deleteUser(id); // Try deleting the user based on the ID
+    if (res) {
+        // Return success status if deletion is successful
+        return Response
+                .status(Response.Status.OK) // HTTP 200
+                .entity("User deleted successfully.") // Optional: Provide response body
                 .build();
-        } else {
-            return Response
-                .status(500)
+    } else {
+        // Return internal server error if deletion fails
+        return Response
+                .status(Response.Status.INTERNAL_SERVER_ERROR) // HTTP 500
+                .entity("Failed to delete user.") // Optional: Provide response body
                 .build();
-        }
     }
+}
+
     
 }
