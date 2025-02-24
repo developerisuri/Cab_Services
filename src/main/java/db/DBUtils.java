@@ -541,7 +541,139 @@ public Booking getBookingByOrderNum(String orderNum) throws SQLException {
     return driverList;
 }
 
+    
+    //Billing process
+  public Billing getbLatestBooking() throws Exception {
+    //String sql = "SELECT * FROM booking2 ORDER BY book_id DESC LIMIT 1";
+    
+     try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         PreparedStatement ps = conn.prepareStatement("SELECT * FROM booking2 ORDER BY book_id DESC LIMIT 1");
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            System.out.println("✅ Record found: " + rs.getString("ordernum")); // Debugging
+
+            int billId = 0;
+            String orderNum = rs.getString("ordernum");
+            String customerName = rs.getString("cname");
+            int vehicleId = rs.getInt("vehicle_id");
+            int km = rs.getInt("km");
+
+            // Fetch base fare from vehicle table
+            int baseFare = (int) getBaseFare(vehicleId, conn);
+            double kmAmount = km * baseFare;
+            double tax = 5.0, discount = 2.0, driverFees = 50.0;
+            double totalAmount = kmAmount + tax + driverFees - discount;
+
+            return new Billing(billId, orderNum, customerName, vehicleId, km, baseFare, kmAmount, tax, discount, driverFees, totalAmount);
+        } else {
+            System.out.println("❌ No records found in booking2"); // Debugging
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+     } catch (Exception e) {
+
+        }
+    return null;
+}
+
+   public double getBaseFare(int vehicleId, Connection conn) throws SQLException {
+    String sql = "SELECT basefare FROM vehicle WHERE vehicle_id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, vehicleId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("basefare");
+            }
+        }
+    }
+    return 0; // Default if no record found
 }
 
 
+    public boolean insertBill(Billing bill) {
+    Connection conn = null;
+    PreparedStatement stmt = null;
+
+    try {
+        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        String query = "INSERT INTO bill3 (border_num, bcuname, vehicle_id, km, bbase_fare, km_amount, tax, discount, driver_fees, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        stmt = conn.prepareStatement(query);
+        stmt.setString(1, bill.getOrderNum());
+        stmt.setString(2, bill.getCustomerName());
+        stmt.setInt(3, bill.getVehicleId());
+        stmt.setInt(4, bill.getKm());
+        stmt.setInt(5, bill.getBaseFare());
+        stmt.setDouble(6, bill.getKmAmount());
+        stmt.setDouble(7, bill.getTax());
+        stmt.setDouble(8, bill.getDiscount());
+        stmt.setDouble(9, bill.getDriverFees());
+        stmt.setDouble(10, bill.getTotalAmount());
+
+        int rowsAffected = stmt.executeUpdate();
+        return rowsAffected > 0; // If successful, return true
+
+    } catch (SQLException e) {
+        System.err.println("SQL Error: " + e.getMessage()); // Print exact SQL error
+        e.printStackTrace();
+    } catch (Exception e) {
+        System.err.println("Unexpected Error: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    return false; // Return false if insertion fails
+}
+
     
+    
+     // Get all bookings
+    public List<Billing> getAllBill() {
+       List<Billing> billList = new ArrayList<>();
+
+    String sql = "SELECT bill_idd, border_num, bcuname, vehicle_id, km, bbase_fare, km_amount, tax, discount, driver_fees, total_amount FROM bill3";
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            billList.add(new Billing(
+                rs.getInt("bill_idd"),
+                rs.getString("border_num"),
+                rs.getString("bcuname"),
+                rs.getInt("vehicle_id"),
+                rs.getInt("km"),
+                rs.getInt("bbase_fare"),
+                rs.getDouble("km_amount"),
+                rs.getDouble("tax"),
+                rs.getDouble("discount"),
+                rs.getDouble("driver_fees"),
+                rs.getDouble("total_amount")
+            ));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return billList;
+}
+}
+    
+
+
+
+     
