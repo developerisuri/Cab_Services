@@ -602,25 +602,28 @@ public Booking getBookingByOrderNum(String orderNum) throws SQLException {
 
     try {
         conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        String query = "INSERT INTO bill3 (border_num, bcuname, vehicle_id, km, bbase_fare, km_amount, tax, discount, driver_fees, total_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        // Correct column names should match your database table
+        String query = "INSERT INTO bill3 (border_num, bcuname, vehicle_id, km, bbase_fare, km_amount, tax, discount, driver_fees, total_amount) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         stmt = conn.prepareStatement(query);
-        stmt.setString(1, bill.getOrderNum());
-        stmt.setString(2, bill.getCustomerName());
-        stmt.setInt(3, bill.getVehicleId());
-        stmt.setInt(4, bill.getKm());
-        stmt.setInt(5, bill.getBaseFare());
-        stmt.setDouble(6, bill.getKmAmount());
-        stmt.setDouble(7, bill.getTax());
-        stmt.setDouble(8, bill.getDiscount());
-        stmt.setDouble(9, bill.getDriverFees());
-        stmt.setDouble(10, bill.getTotalAmount());
+        stmt.setString(1, bill.getOrderNum());  // Assuming orderNum is a string
+        stmt.setString(2, bill.getCustomerName());  // Assuming customerName is a string
+        stmt.setInt(3, bill.getVehicleId());  // Assuming vehicleId is an integer
+        stmt.setInt(4, bill.getKm());  // Assuming km is an integer
+        stmt.setInt(5, bill.getBaseFare());  // Assuming baseFare is an integer
+        stmt.setDouble(6, bill.getKmAmount());  // kmAmount is a double
+        stmt.setDouble(7, bill.getTax());  // tax is a double
+        stmt.setDouble(8, bill.getDiscount());  // discount is a double
+        stmt.setDouble(9, bill.getDriverFees());  // driverFees is a double
+        stmt.setDouble(10, bill.getTotalAmount());  // totalAmount is a double
 
         int rowsAffected = stmt.executeUpdate();
-        return rowsAffected > 0; // If successful, return true
+        return rowsAffected > 0;  // Returns true if the insertion was successful
 
     } catch (SQLException e) {
-        System.err.println("SQL Error: " + e.getMessage()); // Print exact SQL error
+        System.err.println("SQL Error: " + e.getMessage());
         e.printStackTrace();
     } catch (Exception e) {
         System.err.println("Unexpected Error: " + e.getMessage());
@@ -635,8 +638,9 @@ public Booking getBookingByOrderNum(String orderNum) throws SQLException {
         }
     }
 
-    return false; // Return false if insertion fails
+    return false;  // Returns false if insertion fails
 }
+
 
     
     
