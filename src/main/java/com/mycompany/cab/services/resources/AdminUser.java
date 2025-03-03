@@ -126,6 +126,8 @@ public Response updateUser(String json) {
    
    @DELETE
 @Path("{id}")
+   @Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public Response deleteUser(@PathParam("id") int id) {
     ADBUtils utils = new ADBUtils();
     boolean res = utils.deleteUser(id); // Try deleting the user based on the ID
