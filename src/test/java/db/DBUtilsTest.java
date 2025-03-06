@@ -61,6 +61,48 @@ public class DBUtilsTest {
         
    // }
     
+
+
+//@Test
+   // public void testGetCustomer() throws Exception {
+       // Customer expResult = new  Customer(99,"Volvo","Colombo","1964545363","0735365343");
+    //   DBUtils instance = new DBUtils();
+         
+        //Test the adding
+     //  boolean added = instance.addCustomer(expResult);
+      //  assertEquals(added, true);
+ 
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
   // @Test
   //  public void testvalidateUserLogin_ValidCredentials() {
@@ -81,6 +123,10 @@ public class DBUtilsTest {
       //  boolean result = dbUtils.validateUserLogin(user);
        // assertFalse(result, "The login should be invalid for incorrect credentials.");
    // }
+
+
+ 
+
 
    // @Test
    // public void testAddUser() {
